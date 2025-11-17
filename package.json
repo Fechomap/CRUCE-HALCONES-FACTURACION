@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "npm run lint && npm run test && tsc",
+    "build": "tsc",
+    "build:full": "npm run lint && npm run test && tsc",
     "start": "node dist/index.js",
     "start:dev": "tsx src/index.ts",
     "clean": "rm -rf dist coverage",
