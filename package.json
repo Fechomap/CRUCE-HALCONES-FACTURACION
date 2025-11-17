@@ -1,0 +1,58 @@
+{
+  "name": "cruce-halcones",
+  "version": "1.0.0",
+  "description": "Sistema automatizado de cruce de facturación para Telegram",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "npm run lint && npm run test && tsc",
+    "start": "node dist/index.js",
+    "start:dev": "tsx src/index.ts",
+    "clean": "rm -rf dist coverage",
+    "prebuild": "npm run clean",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:unit": "jest --testPathPattern=tests/unit",
+    "test:integration": "jest --testPathPattern=tests/integration"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "excel",
+    "facturacion",
+    "automation"
+  ],
+  "author": "HALCONES",
+  "license": "MIT",
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.2.3",
+    "exceljs": "^4.4.0",
+    "telegraf": "^4.16.3",
+    "winston": "^3.18.3",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.2.0",
+    "@types/debug": "^4.1.12",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.1",
+    "@typescript-eslint/eslint-plugin": "^8.47.0",
+    "@typescript-eslint/parser": "^8.47.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
+    "prettier": "^3.6.2",
+    "ts-jest": "^29.4.5",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

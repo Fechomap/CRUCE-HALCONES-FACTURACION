@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Temp files
+temp/
+tmp/
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+coverage/
+.nyc_output/
+
+# Python (for analysis scripts)
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Excel temp files
+~$*.xlsx
+~$*.xls
+
+# Generated files
+BASE_ACTUALIZADA*.xlsx
+REPORTE_*.txt
+**/output-test.xlsx
+**/report-test.txt
+
+# Test fixtures - INCLUIR archivos de prueba (no ignorar)
+!tests/fixtures/*.xlsx
+
+# Archivos de prueba temporal en raíz
+/1.xlsx
+/2.xlsx
