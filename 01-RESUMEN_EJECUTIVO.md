@@ -40,7 +40,7 @@
 ### Token Configurado
 ✅ Token de Telegram ya configurado en `.env`:
 ```
-7281931989:AAHef5kyzCAmR2e7q1rxpK1e10ZbJVibvow
+<TU_TOKEN_AQUI>
 ```
 
 ### Para Desplegar (3 pasos):

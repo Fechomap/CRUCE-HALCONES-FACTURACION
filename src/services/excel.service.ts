@@ -11,6 +11,20 @@ const logger = createLogger({ service: 'ExcelService' });
 
 export class ExcelService {
   /**
+   * Convierte número de columna a letra (1='A', 27='AA', 77='BY')
+   */
+  private numberToColumn(num: number): string {
+    let result = '';
+    let n = num;
+    while (n > 0) {
+      const remainder = (n - 1) % 26;
+      result = String.fromCharCode(65 + remainder) + result;
+      n = Math.floor((n - 1) / 26);
+    }
+    return result;
+  }
+
+  /**
    * Normaliza un header (elimina espacios, caracteres especiales)
    */
   private normalizeHeader(header: string): string {
@@ -117,7 +131,7 @@ export class ExcelService {
         columnMap.set(header, index + 1); // Excel columns are 1-indexed
       });
 
-      // 4. Actualizar cada fila de datos
+      // 4. Actualizar cada fila de datos (solo valores, preservando fórmulas)
       for (let dataRowIndex = 0; dataRowIndex < data.length; dataRowIndex++) {
         const rowData = data[dataRowIndex];
         const excelRowNumber = dataRowIndex + 2; // +1 for header, +1 for 0-indexed
@@ -150,12 +164,77 @@ export class ExcelService {
         worksheetRow.commit();
       }
 
+      // 4.5. Aplicar colores a columna DIFERENCIAS usando acceso directo (evita bug de ExcelJS)
+      const diferenciasColIndex = columnMap.get('DIFERENCIAS');
+      if (diferenciasColIndex) {
+        logger.info('Aplicando colores a columna DIFERENCIAS', { colIndex: diferenciasColIndex });
+
+        // Convertir índice numérico a letra de columna (77 = BZ en Excel)
+        const colLetter = this.numberToColumn(diferenciasColIndex);
+
+        for (let dataRowIndex = 0; dataRowIndex < data.length; dataRowIndex++) {
+          const excelRowNumber = dataRowIndex + 2;
+
+          // Acceso DIRECTO a la celda por referencia (ej: 'BY2')
+          // Esto evita el bug de referencias compartidas de ExcelJS
+          const cellRef = `${colLetter}${excelRowNumber}`;
+          const difCell = worksheet.getCell(cellRef);
+
+          // Leer el valor de la fórmula
+          let difValue = 0;
+          if (
+            difCell.formula &&
+            difCell.value &&
+            typeof difCell.value === 'object' &&
+            'result' in difCell.value
+          ) {
+            difValue = (difCell.value as any).result;
+          } else if (typeof difCell.value === 'number') {
+            difValue = difCell.value;
+          }
+
+          // Aplicar colores según el valor de =BQ-BX
+          // BQ = SUBTOTAL SERVICIO (lo que ustedes cobran)
+          // BX = COBRADO/FACTURADO (lo que les pagan)
+          // BQ - BX > 0 = Les pagaron MENOS = ADEUDO = ROJO
+          // BQ - BX < 0 = Les pagaron MÁS = A FAVOR = VERDE
+          if (difValue > 0.01) {
+            // POSITIVO (les deben dinero) = EN CONTRA = ROJO
+            difCell.style = {
+              font: { color: { argb: 'FFFF0000' }, bold: true },
+              fill: {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFFFC7CE' },
+              },
+              numFmt: '$#,##0.00;[Red]-$#,##0.00',
+            };
+          } else if (difValue < -0.01) {
+            // NEGATIVO (les pagaron de más) = A FAVOR = VERDE
+            difCell.style = {
+              font: { color: { argb: 'FF006100' }, bold: true },
+              fill: {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFC6EFCE' },
+              },
+              numFmt: '$#,##0.00',
+            };
+          } else {
+            // CERO = Sin color
+            difCell.style = {
+              numFmt: '$#,##0.00',
+            };
+          }
+        }
+      }
+
       // 5. Guardar el workbook modificado
       await workbook.xlsx.writeFile(outputPath);
 
       logger.info(`Successfully updated Excel file (formulas preserved)`, {
         outputPath,
-        rowCount: data.length
+        rowCount: data.length,
       });
     } catch (error) {
       logger.error(`Error updating Excel file: ${originalFilePath}`, error as Error);
@@ -186,8 +265,8 @@ export class ExcelService {
       worksheet.addRow(headers);
 
       // Agregar datos (solo valores, sin fórmulas)
-      data.forEach(row => {
-        const values = headers.map(header => {
+      data.forEach((row) => {
+        const values = headers.map((header) => {
           const value = row[header];
           // Convertir valores para evitar problemas con fórmulas
           if (value === null || value === undefined) return null;
@@ -197,7 +276,7 @@ export class ExcelService {
       });
 
       // Auto-fit columns (aproximado)
-      worksheet.columns.forEach(column => {
+      worksheet.columns.forEach((column) => {
         if (column.header) {
           column.width = Math.max(column.header.toString().length + 2, 10);
         }
@@ -249,7 +328,7 @@ export class ExcelService {
     requiredColumns: readonly string[]
   ): Promise<{ valid: boolean; missing: string[]; suggestions: Map<string, string> }> {
     const headers = await this.getHeaders(filePath);
-    const normalizedHeaders = headers.map(h => this.normalizeHeaderForComparison(h));
+    const normalizedHeaders = headers.map((h) => this.normalizeHeaderForComparison(h));
 
     const missing: string[] = [];
     const suggestions = new Map<string, string>();

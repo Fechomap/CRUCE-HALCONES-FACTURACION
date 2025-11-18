@@ -158,7 +158,9 @@ export class ValidationService {
 
       // Agregar nota si hay más errores
       if (errors.length >= maxErrorsToShow && invalidRows > maxErrorsToShow) {
-        errors.push(`\n... y ${invalidRows - errors.length} errores más (total: ${invalidRows} filas inválidas)`);
+        errors.push(
+          `\n... y ${invalidRows - errors.length} errores más (total: ${invalidRows} filas inválidas)`
+        );
       }
 
       logger.info('Validation completed', {
@@ -212,7 +214,10 @@ export class ValidationService {
       logger.info('Validating cotejo file', { filePath });
 
       // Validar columnas requeridas (fuzzy matching)
-      const columnValidation = await excelService.validateColumns(filePath, COTEJO_REQUIRED_COLUMNS);
+      const columnValidation = await excelService.validateColumns(
+        filePath,
+        COTEJO_REQUIRED_COLUMNS
+      );
 
       if (!columnValidation.valid) {
         const headers = await excelService.getHeaders(filePath);

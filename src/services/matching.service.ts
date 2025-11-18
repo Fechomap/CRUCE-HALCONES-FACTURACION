@@ -53,10 +53,7 @@ export class MatchingService {
   /**
    * Carga los archivos en memoria
    */
-  private async cargarArchivos(
-    facturacionFilePath: string,
-    cotejoFilePath: string
-  ): Promise<void> {
+  private async cargarArchivos(facturacionFilePath: string, cotejoFilePath: string): Promise<void> {
     logger.info('Loading files');
 
     this.facturacionData = await excelService.readExcel<FacturacionRow>(facturacionFilePath);
@@ -153,7 +150,10 @@ export class MatchingService {
           indices: matchIndices,
         });
 
-        logger.debug('Duplicate expediente found', { expediente, occurrences: matchIndices.length });
+        logger.debug('Duplicate expediente found', {
+          expediente,
+          occurrences: matchIndices.length,
+        });
       } else {
         // Encontrado único
         const matchIndex = matchIndices[0];
@@ -179,7 +179,13 @@ export class MatchingService {
     const sinFacturar = this.identificarSinFacturar();
 
     // Calcular estadísticas
-    const stats = this.calcularEstadisticas(encontrados, noEncontrados, duplicados, sinFacturar, discrepancias);
+    const stats = this.calcularEstadisticas(
+      encontrados,
+      noEncontrados,
+      duplicados,
+      sinFacturar,
+      discrepancias
+    );
 
     // Métricas de performance
     const endTime = Date.now();
@@ -313,7 +319,7 @@ export class MatchingService {
     discrepancias: MontoDiscrepancy[]
   ): MatchingStats {
     const totalAmount = encontrados.reduce((sum, match) => {
-      const rowFact = this.facturacionData.find(r => r.EXPEDIENTE === match.expediente);
+      const rowFact = this.facturacionData.find((r) => r.EXPEDIENTE === match.expediente);
       return sum + (rowFact ? this.calcularMontoTotal(rowFact) : 0);
     }, 0);
 

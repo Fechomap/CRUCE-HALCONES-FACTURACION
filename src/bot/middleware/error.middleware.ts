@@ -20,7 +20,7 @@ export async function errorMiddleware(err: Error, ctx: Context): Promise<void> {
   try {
     await ctx.reply(
       `${EMOJI.ERROR} Ocurrió un error inesperado.\n\n` +
-      `Por favor intenta nuevamente o contacta al soporte si el problema persiste.`
+        `Por favor intenta nuevamente o contacta al soporte si el problema persiste.`
     );
   } catch (replyError) {
     logger.error('Failed to send error message to user', replyError as Error);

@@ -30,10 +30,7 @@ export async function documentHandler(ctx: Context): Promise<void> {
       await ctx.reply(
         `${EMOJI.INFO} Para realizar un cruce, primero usa el botón "${KEYBOARD_BUTTONS.REALIZAR_CRUCE}" o el comando /cruce`,
         {
-          ...Markup.keyboard([
-            [KEYBOARD_BUTTONS.REALIZAR_CRUCE],
-            [KEYBOARD_BUTTONS.VOLVER_MENU],
-          ])
+          ...Markup.keyboard([[KEYBOARD_BUTTONS.REALIZAR_CRUCE], [KEYBOARD_BUTTONS.VOLVER_MENU]])
             .resize()
             .persistent(),
         }
@@ -55,10 +52,7 @@ export async function documentHandler(ctx: Context): Promise<void> {
     logger.logFileProcessing(fileName, fileSize, userId);
 
     // Validar tamaño
-    const sizeValidation = validationService.validateFileSize(
-      fileSize,
-      config.maxFileSizeBytes
-    );
+    const sizeValidation = validationService.validateFileSize(fileSize, config.maxFileSizeBytes);
 
     if (!sizeValidation.valid) {
       await ctx.reply(`${MESSAGES.FILE_TOO_LARGE}\n\nTamaño recibido: ${formatBytes(fileSize)}`);
@@ -91,7 +85,11 @@ export async function documentHandler(ctx: Context): Promise<void> {
       const buffer = await response.arrayBuffer();
       await fs.writeFile(tempFilePath, Buffer.from(buffer));
 
-      logger.info('File downloaded successfully', { userId, tempFilePath, waitingFor: userState.waitingFor });
+      logger.info('File downloaded successfully', {
+        userId,
+        tempFilePath,
+        waitingFor: userState.waitingFor,
+      });
 
       // Procesar según el archivo que estamos esperando
       if (userState.waitingFor === 'archivo1') {
@@ -113,7 +111,12 @@ export async function documentHandler(ctx: Context): Promise<void> {
 /**
  * Maneja el primer archivo (Facturación)
  */
-async function handleArchivo1(ctx: Context, userId: number, filePath: string, fileName: string): Promise<void> {
+async function handleArchivo1(
+  ctx: Context,
+  userId: number,
+  filePath: string,
+  fileName: string
+): Promise<void> {
   const userState = userStates.get(userId);
   if (!userState) return;
 
@@ -153,9 +156,9 @@ async function handleArchivo1(ctx: Context, userId: number, filePath: string, fi
     // Pedir el segundo archivo
     await ctx.reply(
       `${EMOJI.ROCKET} *PASO 2/2: Envía el Excel BASE*\n\n` +
-      `Este es el archivo donde se cruzará la información del archivo anterior.\n\n` +
-      `${EMOJI.INFO} Este archivo debe tener las columnas de la base operativa.\n\n` +
-      `📎 Formato: .xlsx | Máx: 10MB`,
+        `Este es el archivo donde se cruzará la información del archivo anterior.\n\n` +
+        `${EMOJI.INFO} Este archivo debe tener las columnas de la base operativa.\n\n` +
+        `📎 Formato: .xlsx | Máx: 10MB`,
       {
         parse_mode: 'Markdown',
         ...Markup.keyboard([[KEYBOARD_BUTTONS.VOLVER_MENU]])
@@ -176,10 +179,17 @@ async function handleArchivo1(ctx: Context, userId: number, filePath: string, fi
 /**
  * Maneja el segundo archivo (Base) y ejecuta el cruce
  */
-async function handleArchivo2(ctx: Context, userId: number, filePath: string, fileName: string): Promise<void> {
+async function handleArchivo2(
+  ctx: Context,
+  userId: number,
+  filePath: string,
+  fileName: string
+): Promise<void> {
   const userState = userStates.get(userId);
   if (!userState || !userState.archivo1) {
-    await ctx.reply(`${EMOJI.ERROR} Error: No se encontró el archivo de facturación. Inicia de nuevo con /cruce`);
+    await ctx.reply(
+      `${EMOJI.ERROR} Error: No se encontró el archivo de facturación. Inicia de nuevo con /cruce`
+    );
     await fs.unlink(filePath);
     userStates.delete(userId);
     return;
@@ -216,15 +226,15 @@ async function handleArchivo2(ctx: Context, userId: number, filePath: string, fi
       processingMsg.message_id,
       undefined,
       `${EMOJI.SUCCESS} Archivo base recibido: *${fileName}*\n\n` +
-      `${EMOJI.PROCESSING} Realizando cruce de información...\n\n` +
-      `Esto puede tomar un momento.`,
+        `${EMOJI.PROCESSING} Realizando cruce de información...\n\n` +
+        `Esto puede tomar un momento.`,
       { parse_mode: 'Markdown' }
     );
 
     logger.info('Starting cruce process', {
       userId,
       archivo1: userState.archivo1,
-      archivo2: userState.archivo2
+      archivo2: userState.archivo2,
     });
 
     // Ejecutar cruce: archivo1 (facturación) → archivo2 (base)
@@ -239,7 +249,10 @@ async function handleArchivo2(ctx: Context, userId: number, filePath: string, fi
       { parse_mode: 'Markdown' }
     );
 
-    const outputBasePath = path.join(config.tempDir, `BASE_ACTUALIZADA_${userId}_${generateId()}.xlsx`);
+    const outputBasePath = path.join(
+      config.tempDir,
+      `BASE_ACTUALIZADA_${userId}_${generateId()}.xlsx`
+    );
     const outputReportPath = path.join(config.tempDir, `REPORTE_${userId}_${generateId()}.txt`);
 
     await matchingService.guardarBaseActualizada(outputBasePath);
@@ -269,30 +282,18 @@ async function handleArchivo2(ctx: Context, userId: number, filePath: string, fi
     // Enviar alertas si hay
     const alertas = reportService.generarAlertas(report);
     if (alertas.length > 0) {
-      await ctx.reply(
-        `${EMOJI.WARNING} *Alertas:*\n\n${alertas.join('\n')}`,
-        {
-          parse_mode: 'Markdown',
-          ...Markup.keyboard([
-            [KEYBOARD_BUTTONS.REALIZAR_CRUCE],
-            [KEYBOARD_BUTTONS.VOLVER_MENU],
-          ])
-            .resize()
-            .persistent(),
-        }
-      );
+      await ctx.reply(`${EMOJI.WARNING} *Alertas:*\n\n${alertas.join('\n')}`, {
+        parse_mode: 'Markdown',
+        ...Markup.keyboard([[KEYBOARD_BUTTONS.REALIZAR_CRUCE], [KEYBOARD_BUTTONS.VOLVER_MENU]])
+          .resize()
+          .persistent(),
+      });
     } else {
-      await ctx.reply(
-        `${EMOJI.SUCCESS} Proceso completado exitosamente`,
-        {
-          ...Markup.keyboard([
-            [KEYBOARD_BUTTONS.REALIZAR_CRUCE],
-            [KEYBOARD_BUTTONS.VOLVER_MENU],
-          ])
-            .resize()
-            .persistent(),
-        }
-      );
+      await ctx.reply(`${EMOJI.SUCCESS} Proceso completado exitosamente`, {
+        ...Markup.keyboard([[KEYBOARD_BUTTONS.REALIZAR_CRUCE], [KEYBOARD_BUTTONS.VOLVER_MENU]])
+          .resize()
+          .persistent(),
+      });
     }
 
     // Limpiar archivos temporales

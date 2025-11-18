@@ -33,7 +33,7 @@ railway login
 railway init
 
 # Configurar variables de entorno
-railway variables set TELEGRAM_BOT_TOKEN=7281931989:AAHef5kyzCAmR2e7q1rxpK1e10ZbJVibvow
+railway variables set TELEGRAM_BOT_TOKEN=<TU_TOKEN_AQUI>
 railway variables set NODE_ENV=production
 
 # Desplegar
@@ -53,7 +53,7 @@ railway up
 En el Dashboard de Railway, ve a Variables y agrega:
 
 ```env
-TELEGRAM_BOT_TOKEN=7281931989:AAHef5kyzCAmR2e7q1rxpK1e10ZbJVibvow
+TELEGRAM_BOT_TOKEN=<TU_TOKEN_AQUI>
 NODE_ENV=production
 MAX_FILE_SIZE_MB=10
 ALLOWED_FILE_TYPES=.xlsx

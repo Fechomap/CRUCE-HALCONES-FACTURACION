@@ -25,10 +25,7 @@ const logger = winston.createLogger({
   transports: [
     // Console transport
     new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        customFormat
-      ),
+      format: winston.format.combine(winston.format.colorize(), customFormat),
     }),
     // File transport - errores
     new winston.transports.File({

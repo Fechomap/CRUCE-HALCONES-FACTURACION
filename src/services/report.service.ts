@@ -3,12 +3,7 @@
  */
 import fs from 'fs/promises';
 import { createLogger } from '../utils/logger';
-import {
-  formatCurrency,
-  formatDate,
-  separator,
-  thickSeparator,
-} from '../utils/helpers';
+import { formatCurrency, formatDate, separator, thickSeparator } from '../utils/helpers';
 import { EMOJI } from '../utils/constants';
 import type { MatchingReport } from '../types';
 
@@ -49,7 +44,7 @@ export class ReportService {
       for (const item of report.noEncontrados) {
         lines.push(
           `EXPEDIENTE: ${item.expediente} | Folio: ${item.folio1} | ` +
-          `Factura: ${item.factura1} | Monto: ${formatCurrency(item.monto1)}`
+            `Factura: ${item.factura1} | Monto: ${formatCurrency(item.monto1)}`
         );
       }
     }
@@ -63,8 +58,8 @@ export class ReportService {
       for (const item of report.duplicados) {
         lines.push(
           `EXPEDIENTE: ${item.expediente} | ` +
-          `Ocurrencias: ${item.occurrences} | ` +
-          `Facturación aplicada a todas`
+            `Ocurrencias: ${item.occurrences} | ` +
+            `Facturación aplicada a todas`
         );
       }
     }
@@ -81,7 +76,7 @@ export class ReportService {
         lines.push(`   Total servicio:    ${formatCurrency(item.totalServicio)}`);
         lines.push(
           `   Diferencia:        ${formatCurrency(item.diferencia)} ` +
-          `(${item.diferenciaPct.toFixed(1)}%)`
+            `(${item.diferenciaPct.toFixed(1)}%)`
         );
         lines.push('');
       }
@@ -97,15 +92,15 @@ export class ReportService {
       for (const item of report.sinFacturar) {
         lines.push(
           `EXPEDIENTE: ${item.expediente} | ` +
-          `Total servicio: ${formatCurrency(item.totalServicio)} | ` +
-          `Fecha: ${formatDate(item.fecha, 'dd/MM/yyyy')}`
+            `Total servicio: ${formatCurrency(item.totalServicio)} | ` +
+            `Fecha: ${formatDate(item.fecha, 'dd/MM/yyyy')}`
         );
         totalPendiente += item.totalServicio;
       }
       lines.push('');
       lines.push(
         `Total pendientes: ${report.sinFacturar.length} expedientes | ` +
-        `Monto: ${formatCurrency(totalPendiente)}`
+          `Monto: ${formatCurrency(totalPendiente)}`
       );
     }
 
@@ -206,16 +201,12 @@ export class ReportService {
     }
 
     if (report.stats.unfacturedCount > 0) {
-      alertas.push(
-        `${EMOJI.PENDING} ${report.stats.unfacturedCount} servicios sin facturación`
-      );
+      alertas.push(`${EMOJI.PENDING} ${report.stats.unfacturedCount} servicios sin facturación`);
     }
 
-    const discrepanciasGraves = report.discrepancias.filter(d => d.diferenciaPct > 50);
+    const discrepanciasGraves = report.discrepancias.filter((d) => d.diferenciaPct > 50);
     if (discrepanciasGraves.length > 0) {
-      alertas.push(
-        `${EMOJI.ERROR} ${discrepanciasGraves.length} discrepancias mayores al 50%`
-      );
+      alertas.push(`${EMOJI.ERROR} ${discrepanciasGraves.length} discrepancias mayores al 50%`);
     }
 
     return alertas;

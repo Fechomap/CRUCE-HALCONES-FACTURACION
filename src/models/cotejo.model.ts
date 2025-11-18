@@ -47,4 +47,4 @@ export const COTEJO_REQUIRED_COLUMNS = [
   'DIFERENCIAS',
 ] as const;
 
-export type CotejoColumn = typeof COTEJO_REQUIRED_COLUMNS[number];
+export type CotejoColumn = (typeof COTEJO_REQUIRED_COLUMNS)[number];

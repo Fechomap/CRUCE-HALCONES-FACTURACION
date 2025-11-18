@@ -22,7 +22,7 @@ export const FacturacionRowSchema = z.object({
   'Folio 5': z.coerce.number().int().positive().optional().nullable(),
   'Factura 5': z.coerce.string().optional().nullable(),
   'Monto 5': z.coerce.number().positive().optional().nullable(),
-  'Vehículo': z.coerce.string().optional().nullable(),
+  Vehículo: z.coerce.string().optional().nullable(),
 });
 
 export type FacturacionRow = z.infer<typeof FacturacionRowSchema>;
@@ -67,4 +67,4 @@ export const FACTURACION_ALL_COLUMNS = [
   'Vehículo',
 ] as const;
 
-export type FacturacionColumn = typeof FACTURACION_ALL_COLUMNS[number];
+export type FacturacionColumn = (typeof FACTURACION_ALL_COLUMNS)[number];

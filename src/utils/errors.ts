@@ -57,10 +57,10 @@ export function createFileTooLargeError(size: number, maxSize: number): AppError
     ErrorCode.FILE_TOO_LARGE,
     `File size ${size} exceeds maximum ${maxSize}`,
     `${EMOJI.ERROR} *Archivo demasiado grande*\n\n` +
-    `El archivo que enviaste excede el tamaño máximo permitido.\n\n` +
-    `• Tamaño del archivo: ${(size / 1024 / 1024).toFixed(2)} MB\n` +
-    `• Tamaño máximo: ${(maxSize / 1024 / 1024).toFixed(2)} MB\n\n` +
-    `Por favor comprime el archivo o envía uno más pequeño.`,
+      `El archivo que enviaste excede el tamaño máximo permitido.\n\n` +
+      `• Tamaño del archivo: ${(size / 1024 / 1024).toFixed(2)} MB\n` +
+      `• Tamaño máximo: ${(maxSize / 1024 / 1024).toFixed(2)} MB\n\n` +
+      `Por favor comprime el archivo o envía uno más pequeño.`,
     { size, maxSize }
   );
 }
@@ -73,9 +73,9 @@ export function createInvalidFormatError(fileName: string, allowedTypes: string[
     ErrorCode.FILE_INVALID_FORMAT,
     `Invalid file format: ${fileName}`,
     `${EMOJI.ERROR} *Formato de archivo inválido*\n\n` +
-    `El archivo "${fileName}" no tiene un formato válido.\n\n` +
-    `• Formatos permitidos: ${allowedTypes.join(', ')}\n\n` +
-    `Por favor envía un archivo Excel válido (.xlsx).`,
+      `El archivo "${fileName}" no tiene un formato válido.\n\n` +
+      `• Formatos permitidos: ${allowedTypes.join(', ')}\n\n` +
+      `Por favor envía un archivo Excel válido (.xlsx).`,
     { fileName, allowedTypes }
   );
 }
@@ -88,9 +88,9 @@ export function createFileDownloadError(fileId: string, originalError: Error): A
     ErrorCode.FILE_DOWNLOAD_FAILED,
     `Failed to download file: ${fileId}`,
     `${EMOJI.ERROR} *Error al descargar archivo*\n\n` +
-    `No se pudo descargar el archivo de Telegram.\n\n` +
-    `Error: ${originalError.message}\n\n` +
-    `Por favor intenta enviar el archivo nuevamente.`,
+      `No se pudo descargar el archivo de Telegram.\n\n` +
+      `Error: ${originalError.message}\n\n` +
+      `Por favor intenta enviar el archivo nuevamente.`,
     { fileId, originalError: originalError.message }
   );
 }
@@ -103,9 +103,9 @@ export function createMissingColumnsError(missingColumns: string[], fileType: st
     ErrorCode.VALIDATION_MISSING_COLUMNS,
     `Missing required columns: ${missingColumns.join(', ')}`,
     `${EMOJI.ERROR} *Columnas requeridas faltantes*\n\n` +
-    `El archivo ${fileType} no contiene todas las columnas requeridas.\n\n` +
-    `*Columnas faltantes:*\n${missingColumns.map(c => `• ${c}`).join('\n')}\n\n` +
-    `Por favor verifica que el archivo tenga la estructura correcta.`,
+      `El archivo ${fileType} no contiene todas las columnas requeridas.\n\n` +
+      `*Columnas faltantes:*\n${missingColumns.map((c) => `• ${c}`).join('\n')}\n\n` +
+      `Por favor verifica que el archivo tenga la estructura correcta.`,
     { missingColumns, fileType }
   );
 }
@@ -118,8 +118,8 @@ export function createEmptyFileError(fileName: string): AppError {
     ErrorCode.VALIDATION_EMPTY_FILE,
     `File is empty: ${fileName}`,
     `${EMOJI.ERROR} *Archivo vacío*\n\n` +
-    `El archivo "${fileName}" no contiene datos.\n\n` +
-    `Por favor verifica que el archivo tenga información antes de enviarlo.`,
+      `El archivo "${fileName}" no contiene datos.\n\n` +
+      `Por favor verifica que el archivo tenga información antes de enviarlo.`,
     { fileName }
   );
 }
@@ -135,10 +135,10 @@ export function createInvalidDataError(errors: string[]): AppError {
     ErrorCode.VALIDATION_INVALID_DATA,
     `Invalid data in file: ${errors.length} errors`,
     `${EMOJI.ERROR} *Datos inválidos en el archivo*\n\n` +
-    `Se encontraron ${errors.length} errores en el archivo:\n\n` +
-    `${errorList.map(e => `• ${e}`).join('\n')}` +
-    `${hasMore ? `\n\n...y ${errors.length - 5} errores más.` : ''}\n\n` +
-    `Por favor corrige estos errores y vuelve a enviar el archivo.`,
+      `Se encontraron ${errors.length} errores en el archivo:\n\n` +
+      `${errorList.map((e) => `• ${e}`).join('\n')}` +
+      `${hasMore ? `\n\n...y ${errors.length - 5} errores más.` : ''}\n\n` +
+      `Por favor corrige estos errores y vuelve a enviar el archivo.`,
     { errors }
   );
 }
@@ -151,9 +151,9 @@ export function createProcessingError(stage: string, originalError: Error): AppE
     ErrorCode.PROCESSING_FAILED,
     `Processing failed at stage: ${stage}`,
     `${EMOJI.ERROR} *Error al procesar*\n\n` +
-    `Ocurrió un error durante el procesamiento en la etapa: ${stage}\n\n` +
-    `*Error técnico:*\n\`${originalError.message}\`\n\n` +
-    `Por favor intenta nuevamente. Si el error persiste, contacta al soporte.`,
+      `Ocurrió un error durante el procesamiento en la etapa: ${stage}\n\n` +
+      `*Error técnico:*\n\`${originalError.message}\`\n\n` +
+      `Por favor intenta nuevamente. Si el error persiste, contacta al soporte.`,
     { stage, originalError: originalError.message, stack: originalError.stack }
   );
 }
@@ -166,8 +166,8 @@ export function createStateNotFoundError(userId: number): AppError {
     ErrorCode.STATE_NOT_FOUND,
     `User state not found: ${userId}`,
     `${EMOJI.WARNING} *Sesión no encontrada*\n\n` +
-    `No se encontró una sesión activa de cruce.\n\n` +
-    `Por favor inicia un nuevo cruce usando el botón "🚀 Realizar Cruce" o el comando /cruce.`,
+      `No se encontró una sesión activa de cruce.\n\n` +
+      `Por favor inicia un nuevo cruce usando el botón "🚀 Realizar Cruce" o el comando /cruce.`,
     { userId }
   );
 }
@@ -180,10 +180,10 @@ export function createMissingArchivo1Error(): AppError {
     ErrorCode.MISSING_ARCHIVO1,
     'First file (facturación) is missing',
     `${EMOJI.ERROR} *Error: Archivo de facturación no encontrado*\n\n` +
-    `No se encontró el archivo de facturación (Excel 1).\n\n` +
-    `Por favor inicia el proceso nuevamente con /cruce y envía ambos archivos en orden:\n` +
-    `1. Excel de facturación\n` +
-    `2. Excel base`,
+      `No se encontró el archivo de facturación (Excel 1).\n\n` +
+      `Por favor inicia el proceso nuevamente con /cruce y envía ambos archivos en orden:\n` +
+      `1. Excel de facturación\n` +
+      `2. Excel base`,
     {}
   );
 }
@@ -196,13 +196,13 @@ export function createMatchingError(originalError: Error, context?: unknown): Ap
     ErrorCode.MATCHING_FAILED,
     'Matching process failed',
     `${EMOJI.ERROR} *Error en el cruce de información*\n\n` +
-    `Ocurrió un error al cruzar los datos entre los archivos.\n\n` +
-    `*Error técnico:*\n\`${originalError.message}\`\n\n` +
-    `Posibles causas:\n` +
-    `• Estructura de archivos incompatible\n` +
-    `• Datos corruptos\n` +
-    `• Expedientes con formato inválido\n\n` +
-    `Por favor verifica los archivos y vuelve a intentar.`,
+      `Ocurrió un error al cruzar los datos entre los archivos.\n\n` +
+      `*Error técnico:*\n\`${originalError.message}\`\n\n` +
+      `Posibles causas:\n` +
+      `• Estructura de archivos incompatible\n` +
+      `• Datos corruptos\n` +
+      `• Expedientes con formato inválido\n\n` +
+      `Por favor verifica los archivos y vuelve a intentar.`,
     { originalError: originalError.message, stack: originalError.stack, context }
   );
 }
@@ -215,9 +215,9 @@ export function createReportGenerationError(originalError: Error): AppError {
     ErrorCode.REPORT_GENERATION_FAILED,
     'Report generation failed',
     `${EMOJI.ERROR} *Error al generar reporte*\n\n` +
-    `El cruce se completó pero ocurrió un error al generar los reportes.\n\n` +
-    `*Error técnico:*\n\`${originalError.message}\`\n\n` +
-    `Los datos fueron procesados correctamente. Contacta al soporte para obtener los resultados.`,
+      `El cruce se completó pero ocurrió un error al generar los reportes.\n\n` +
+      `*Error técnico:*\n\`${originalError.message}\`\n\n` +
+      `Los datos fueron procesados correctamente. Contacta al soporte para obtener los resultados.`,
     { originalError: originalError.message }
   );
 }
@@ -230,10 +230,10 @@ export function createUnknownError(originalError: Error, context?: unknown): App
     ErrorCode.UNKNOWN_ERROR,
     `Unknown error: ${originalError.message}`,
     `${EMOJI.ERROR} *Error inesperado*\n\n` +
-    `Ocurrió un error inesperado en el sistema.\n\n` +
-    `*ID del error:* \`${Date.now()}\`\n` +
-    `*Error técnico:* \`${originalError.message}\`\n\n` +
-    `Por favor intenta nuevamente. Si el error persiste, contacta al soporte con el ID del error.`,
+      `Ocurrió un error inesperado en el sistema.\n\n` +
+      `*ID del error:* \`${Date.now()}\`\n` +
+      `*Error técnico:* \`${originalError.message}\`\n\n` +
+      `Por favor intenta nuevamente. Si el error persiste, contacta al soporte con el ID del error.`,
     {
       originalError: originalError.message,
       stack: originalError.stack,
@@ -268,7 +268,11 @@ export function getUserMessage(error: unknown): string {
 /**
  * Log de error con contexto completo
  */
-export function logError(error: unknown, logger: { error: (msg: string, err: Error, ctx?: unknown) => void }, context?: unknown): void {
+export function logError(
+  error: unknown,
+  logger: { error: (msg: string, err: Error, ctx?: unknown) => void },
+  context?: unknown
+): void {
   if (isAppError(error)) {
     logger.error(error.message, error, { code: error.code, details: error.details, context });
   } else if (error instanceof Error) {

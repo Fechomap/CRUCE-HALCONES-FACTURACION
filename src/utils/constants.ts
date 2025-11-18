@@ -79,7 +79,7 @@ Este archivo contiene los datos que se van a cruzar.
   INVALID_FORMAT: '❌ Formato de archivo inválido.\n\nPor favor envía un archivo .xlsx',
 
   MISSING_COLUMNS: (columns: string[]) =>
-    `❌ Faltan columnas requeridas:\n\n${columns.map(c => `• ${c}`).join('\n')}`,
+    `❌ Faltan columnas requeridas:\n\n${columns.map((c) => `• ${c}`).join('\n')}`,
 
   ERROR: '❌ Ocurrió un error procesando el archivo.\n\nPor favor intenta nuevamente.',
 

@@ -62,7 +62,7 @@ railway variables
 
 Debe mostrar:
 ```
-TELEGRAM_BOT_TOKEN=7281931989:AAHef5kyzCAmR2e7q1rxpK1e10ZbJVibvow
+TELEGRAM_BOT_TOKEN=<TU_TOKEN_AQUI>
 ```
 
 ### Ver Errores
@@ -102,7 +102,7 @@ Todo está en `/docs`:
 ### Variables de Entorno (.env)
 
 ```env
-TELEGRAM_BOT_TOKEN=7281931989:AAHef5kyzCAmR2e7q1rxpK1e10ZbJVibvow
+TELEGRAM_BOT_TOKEN=<TU_TOKEN_AQUI>
 NODE_ENV=production
 EXCEL_SHEET_NAME=Hoja1
 NORMALIZE_HEADERS=true

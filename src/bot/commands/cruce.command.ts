@@ -30,12 +30,12 @@ export async function cruceCommand(ctx: Context): Promise<void> {
 
     await ctx.reply(
       `${EMOJI.ROCKET} *INICIAR CRUCE DE FACTURACIÓN*\n\n` +
-      `📤 *PASO 1/2: Envía el Excel de FACTURACIÓN*\n\n` +
-      `Este es el archivo que contiene los datos que se van a cruzar.\n\n` +
-      `Debe contener las columnas:\n` +
-      `• EXPEDIENTE\n` +
-      `• Folio 1, Factura 1, Monto 1\n\n` +
-      `📎 Formato: .xlsx | Máx: 10MB`,
+        `📤 *PASO 1/2: Envía el Excel de FACTURACIÓN*\n\n` +
+        `Este es el archivo que contiene los datos que se van a cruzar.\n\n` +
+        `Debe contener las columnas:\n` +
+        `• EXPEDIENTE\n` +
+        `• Folio 1, Factura 1, Monto 1\n\n` +
+        `📎 Formato: .xlsx | Máx: 10MB`,
       {
         parse_mode: 'Markdown',
         ...Markup.keyboard([[KEYBOARD_BUTTONS.VOLVER_MENU]])

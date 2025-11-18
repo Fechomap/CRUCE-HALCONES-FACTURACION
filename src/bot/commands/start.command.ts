@@ -14,19 +14,16 @@ export async function startCommand(ctx: Context): Promise<void> {
 
     logger.logUserAction(userId || 0, 'start', { username });
 
-    await ctx.reply(
-      `${EMOJI.ROCKET} Hola, *${username}*!\n\n${MESSAGES.WELCOME}`,
-      {
-        parse_mode: 'Markdown',
-        ...Markup.keyboard([
-          [KEYBOARD_BUTTONS.REALIZAR_CRUCE],
-          [KEYBOARD_BUTTONS.VER_INFO, KEYBOARD_BUTTONS.VER_REPORTE],
-          [KEYBOARD_BUTTONS.AYUDA],
-        ])
-          .resize()
-          .persistent(),
-      }
-    );
+    await ctx.reply(`${EMOJI.ROCKET} Hola, *${username}*!\n\n${MESSAGES.WELCOME}`, {
+      parse_mode: 'Markdown',
+      ...Markup.keyboard([
+        [KEYBOARD_BUTTONS.REALIZAR_CRUCE],
+        [KEYBOARD_BUTTONS.VER_INFO, KEYBOARD_BUTTONS.VER_REPORTE],
+        [KEYBOARD_BUTTONS.AYUDA],
+      ])
+        .resize()
+        .persistent(),
+    });
   } catch (error) {
     logger.error('Error in start command', error as Error);
     await ctx.reply(`${EMOJI.ERROR} Ocurrió un error. Por favor intenta nuevamente.`);
