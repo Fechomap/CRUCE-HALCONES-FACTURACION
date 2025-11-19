@@ -13,8 +13,11 @@ const customFormat = winston.format.combine(
   winston.format.splat(),
   winston.format.printf(({ timestamp, level, message, context, stack }) => {
     const contextStr = context ? ` [${JSON.stringify(context)}]` : '';
-    const stackStr = stack ? `\n${stack}` : '';
-    return `${timestamp} [${level.toUpperCase()}]${contextStr}: ${message}${stackStr}`;
+    const stackStr = stack && typeof stack === 'string' ? `\n${stack}` : '';
+    const msg = typeof message === 'string' ? message : JSON.stringify(message);
+    const lvl = typeof level === 'string' ? level.toUpperCase() : String(level);
+    const ts = typeof timestamp === 'string' ? timestamp : String(timestamp);
+    return `${ts} [${lvl}]${contextStr}: ${msg}${stackStr}`;
   })
 );
 
@@ -51,7 +54,7 @@ class Logger {
     this.context = context;
   }
 
-  private log(level: string, message: string, context?: LogContext) {
+  private log(level: string, message: string, context?: LogContext): void {
     const mergedContext = { ...this.context, ...context };
     logger.log(level, message, { context: mergedContext });
   }

@@ -269,32 +269,17 @@ async function handleArchivo2(
     );
 
     // Enviar archivo base actualizado (IMPORTANTE: Solo el archivo 2 actualizado)
-    await ctx.replyWithDocument(Input.fromLocalFile(outputBasePath), {
-      caption: `${EMOJI.DOCUMENT} *BASE ACTUALIZADA con facturación*\n\nEste es tu archivo base con la información cruzada.`,
-      parse_mode: 'Markdown',
-    });
+    await ctx.replyWithDocument(Input.fromLocalFile(outputBasePath));
 
     // Enviar reporte detallado
-    await ctx.replyWithDocument(Input.fromLocalFile(outputReportPath), {
-      caption: `${EMOJI.DOCUMENT} Reporte detallado del cruce`,
-    });
+    await ctx.replyWithDocument(Input.fromLocalFile(outputReportPath));
 
-    // Enviar alertas si hay
-    const alertas = reportService.generarAlertas(report);
-    if (alertas.length > 0) {
-      await ctx.reply(`${EMOJI.WARNING} *Alertas:*\n\n${alertas.join('\n')}`, {
-        parse_mode: 'Markdown',
-        ...Markup.keyboard([[KEYBOARD_BUTTONS.REALIZAR_CRUCE], [KEYBOARD_BUTTONS.VOLVER_MENU]])
-          .resize()
-          .persistent(),
-      });
-    } else {
-      await ctx.reply(`${EMOJI.SUCCESS} Proceso completado exitosamente`, {
-        ...Markup.keyboard([[KEYBOARD_BUTTONS.REALIZAR_CRUCE], [KEYBOARD_BUTTONS.VOLVER_MENU]])
-          .resize()
-          .persistent(),
-      });
-    }
+    // Proceso completado
+    await ctx.reply(`${EMOJI.SUCCESS} Proceso completado exitosamente`, {
+      ...Markup.keyboard([[KEYBOARD_BUTTONS.REALIZAR_CRUCE], [KEYBOARD_BUTTONS.VOLVER_MENU]])
+        .resize()
+        .persistent(),
+    });
 
     // Limpiar archivos temporales
     await fs.unlink(userState.archivo1);

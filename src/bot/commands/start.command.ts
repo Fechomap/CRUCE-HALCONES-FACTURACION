@@ -16,11 +16,7 @@ export async function startCommand(ctx: Context): Promise<void> {
 
     await ctx.reply(`${EMOJI.ROCKET} Hola, *${username}*!\n\n${MESSAGES.WELCOME}`, {
       parse_mode: 'Markdown',
-      ...Markup.keyboard([
-        [KEYBOARD_BUTTONS.REALIZAR_CRUCE],
-        [KEYBOARD_BUTTONS.VER_INFO, KEYBOARD_BUTTONS.VER_REPORTE],
-        [KEYBOARD_BUTTONS.AYUDA],
-      ])
+      ...Markup.keyboard([[KEYBOARD_BUTTONS.REALIZAR_CRUCE]])
         .resize()
         .persistent(),
     });

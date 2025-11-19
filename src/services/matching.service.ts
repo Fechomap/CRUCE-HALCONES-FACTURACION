@@ -227,9 +227,10 @@ export class MatchingService {
         const montoValue = rowFact[montoKey];
 
         if (!isNullOrUndefined(folioValue)) {
-          (rowCotejo as any)[folioKey] = folioValue;
-          (rowCotejo as any)[facturaKey] = facturaValue;
-          (rowCotejo as any)[montoKey] = typeof montoValue === 'number' ? montoValue : 0;
+          const cotejoRecord = rowCotejo as Record<string, unknown>;
+          cotejoRecord[folioKey] = folioValue;
+          cotejoRecord[facturaKey] = facturaValue;
+          cotejoRecord[montoKey] = typeof montoValue === 'number' ? montoValue : 0;
         }
       }
 
@@ -346,12 +347,16 @@ export class MatchingService {
    */
   async guardarBaseActualizada(outputPath: string): Promise<void> {
     logger.info('Saving updated base (preserving formulas)', { outputPath });
-    // Usar el nuevo método que preserva fórmulas
+
+    // Paso 1: Guardar el archivo con datos actualizados (sin tocar formatos)
     await excelService.updateExcelPreservingFormulas(
       this.cotejoFilePath,
       this.cotejoData,
       outputPath
     );
+
+    // Paso 2: Aplicar colores a columna DIFERENCIAS (proceso separado)
+    await excelService.applyDiferenciasColors(outputPath);
   }
 }
 

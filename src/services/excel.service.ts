@@ -65,7 +65,11 @@ export class ExcelService {
       // Obtener headers de la primera fila
       const firstRow = worksheet.getRow(1);
       firstRow.eachCell((cell, colNumber) => {
-        const rawHeader = cell.value?.toString() || `Column${colNumber}`;
+        const cellValue = cell.value;
+        const rawHeader =
+          typeof cellValue === 'string' || typeof cellValue === 'number'
+            ? String(cellValue)
+            : `Column${colNumber}`;
         // Normalizar header
         headers[colNumber - 1] = this.normalizeHeader(rawHeader);
       });
@@ -122,7 +126,10 @@ export class ExcelService {
       const headers: string[] = [];
       const headerRow = worksheet.getRow(1);
       headerRow.eachCell((cell, colNumber) => {
-        headers[colNumber - 1] = this.normalizeHeader(cell.value?.toString() || '');
+        const cellValue = cell.value;
+        const headerStr =
+          typeof cellValue === 'string' || typeof cellValue === 'number' ? String(cellValue) : '';
+        headers[colNumber - 1] = this.normalizeHeader(headerStr);
       });
 
       // 3. Crear map de columnas: header → columnIndex
@@ -162,71 +169,6 @@ export class ExcelService {
 
         // Commit la fila
         worksheetRow.commit();
-      }
-
-      // 4.5. Aplicar colores a columna DIFERENCIAS usando acceso directo (evita bug de ExcelJS)
-      const diferenciasColIndex = columnMap.get('DIFERENCIAS');
-      if (diferenciasColIndex) {
-        logger.info('Aplicando colores a columna DIFERENCIAS', { colIndex: diferenciasColIndex });
-
-        // Convertir índice numérico a letra de columna (77 = BZ en Excel)
-        const colLetter = this.numberToColumn(diferenciasColIndex);
-
-        for (let dataRowIndex = 0; dataRowIndex < data.length; dataRowIndex++) {
-          const excelRowNumber = dataRowIndex + 2;
-
-          // Acceso DIRECTO a la celda por referencia (ej: 'BY2')
-          // Esto evita el bug de referencias compartidas de ExcelJS
-          const cellRef = `${colLetter}${excelRowNumber}`;
-          const difCell = worksheet.getCell(cellRef);
-
-          // Leer el valor de la fórmula
-          let difValue = 0;
-          if (
-            difCell.formula &&
-            difCell.value &&
-            typeof difCell.value === 'object' &&
-            'result' in difCell.value
-          ) {
-            difValue = (difCell.value as any).result;
-          } else if (typeof difCell.value === 'number') {
-            difValue = difCell.value;
-          }
-
-          // Aplicar colores según el valor de =BQ-BX
-          // BQ = SUBTOTAL SERVICIO (lo que ustedes cobran)
-          // BX = COBRADO/FACTURADO (lo que les pagan)
-          // BQ - BX > 0 = Les pagaron MENOS = ADEUDO = ROJO
-          // BQ - BX < 0 = Les pagaron MÁS = A FAVOR = VERDE
-          if (difValue > 0.01) {
-            // POSITIVO (les deben dinero) = EN CONTRA = ROJO
-            difCell.style = {
-              font: { color: { argb: 'FFFF0000' }, bold: true },
-              fill: {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: { argb: 'FFFFC7CE' },
-              },
-              numFmt: '$#,##0.00;[Red]-$#,##0.00',
-            };
-          } else if (difValue < -0.01) {
-            // NEGATIVO (les pagaron de más) = A FAVOR = VERDE
-            difCell.style = {
-              font: { color: { argb: 'FF006100' }, bold: true },
-              fill: {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: { argb: 'FFC6EFCE' },
-              },
-              numFmt: '$#,##0.00',
-            };
-          } else {
-            // CERO = Sin color
-            difCell.style = {
-              numFmt: '$#,##0.00',
-            };
-          }
-        }
       }
 
       // 5. Guardar el workbook modificado
@@ -309,7 +251,11 @@ export class ExcelService {
       const headers: string[] = [];
       const firstRow = worksheet.getRow(1);
       firstRow.eachCell((cell, colNumber) => {
-        const rawHeader = cell.value?.toString() || `Column${colNumber}`;
+        const cellValue = cell.value;
+        const rawHeader =
+          typeof cellValue === 'string' || typeof cellValue === 'number'
+            ? String(cellValue)
+            : `Column${colNumber}`;
         headers[colNumber - 1] = this.normalizeHeader(rawHeader);
       });
 
@@ -363,6 +309,98 @@ export class ExcelService {
       logger.info(`File copied successfully`, { source, destination });
     } catch (error) {
       logger.error(`Error copying file`, error as Error, { source, destination });
+      throw error;
+    }
+  }
+
+  /**
+   * Aplica formato condicional a la columna DIFERENCIAS
+   * Usa Conditional Formatting de Excel (mucho mejor que pintar celdas)
+   */
+  async applyDiferenciasColors(filePath: string, sheetName?: string): Promise<void> {
+    try {
+      logger.info('Aplicando formato condicional a columna DIFERENCIAS...');
+
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(filePath);
+
+      const actualSheetName = sheetName || config.excelSheetName;
+      const worksheet = workbook.getWorksheet(actualSheetName);
+
+      if (!worksheet) {
+        throw new Error(`Sheet "${actualSheetName}" not found`);
+      }
+
+      // Encontrar columna DIFERENCIAS
+      const headers: string[] = [];
+      const headerRow = worksheet.getRow(1);
+      headerRow.eachCell((cell, colNumber) => {
+        const cellValue = cell.value;
+        const headerStr =
+          typeof cellValue === 'string' || typeof cellValue === 'number' ? String(cellValue) : '';
+        headers[colNumber - 1] = this.normalizeHeader(headerStr);
+      });
+
+      const diferenciasColIndex = headers.indexOf('DIFERENCIAS');
+      if (diferenciasColIndex === -1) {
+        logger.warn('Columna DIFERENCIAS no encontrada');
+        return;
+      }
+
+      const colLetter = this.numberToColumn(diferenciasColIndex + 1);
+      const rowCount = worksheet.rowCount;
+      const range = `${colLetter}2:${colLetter}${rowCount}`;
+
+      logger.info(`Aplicando formato condicional al rango ${range}`);
+
+      // Agregar reglas de formato condicional
+      worksheet.addConditionalFormatting({
+        ref: range,
+        rules: [
+          // Regla 1: Valores negativos = ROJO
+          {
+            type: 'cellIs',
+            operator: 'lessThan',
+            formulae: [0],
+            style: {
+              fill: {
+                type: 'pattern',
+                pattern: 'solid',
+                bgColor: { argb: 'FFFFC7CE' },
+              },
+              font: {
+                color: { argb: 'FFFF0000' },
+                bold: true,
+              },
+            },
+            priority: 1,
+          },
+          // Regla 2: Valores positivos = VERDE
+          {
+            type: 'cellIs',
+            operator: 'greaterThan',
+            formulae: [0],
+            style: {
+              fill: {
+                type: 'pattern',
+                pattern: 'solid',
+                bgColor: { argb: 'FFC6EFCE' },
+              },
+              font: {
+                color: { argb: 'FF006100' },
+                bold: true,
+              },
+            },
+            priority: 2,
+          },
+        ],
+      });
+
+      // Guardar
+      await workbook.xlsx.writeFile(filePath);
+      logger.info('Formato condicional aplicado exitosamente');
+    } catch (error) {
+      logger.error('Error aplicando formato condicional', error as Error);
       throw error;
     }
   }

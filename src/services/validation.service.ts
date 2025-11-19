@@ -26,13 +26,14 @@ export class ValidationService {
   /**
    * Verifica si una fila está completamente vacía
    */
-  private isEmptyRow(row: any): boolean {
+  private isEmptyRow(row: Record<string, unknown>): boolean {
     // Una fila es vacía si no tiene EXPEDIENTE válido
+    const expediente = row.EXPEDIENTE;
     return (
-      row.EXPEDIENTE == null ||
-      row.EXPEDIENTE === '' ||
-      row.EXPEDIENTE === 0 ||
-      (typeof row.EXPEDIENTE === 'string' && row.EXPEDIENTE.trim() === '')
+      expediente == null ||
+      expediente === '' ||
+      expediente === 0 ||
+      (typeof expediente === 'string' && expediente.trim() === '')
     );
   }
 
@@ -242,7 +243,7 @@ export class ValidationService {
       const allRows = await excelService.readExcel(filePath);
 
       // Filtrar filas vacías
-      const rows = allRows.filter((row: any) => !this.isEmptyRow(row));
+      const rows = allRows.filter((row) => !this.isEmptyRow(row as Record<string, unknown>));
 
       const emptyRowCount = allRows.length - rows.length;
       if (emptyRowCount > 0) {

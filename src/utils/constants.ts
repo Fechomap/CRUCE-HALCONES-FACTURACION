@@ -78,7 +78,7 @@ Este archivo contiene los datos que se van a cruzar.
 
   INVALID_FORMAT: '❌ Formato de archivo inválido.\n\nPor favor envía un archivo .xlsx',
 
-  MISSING_COLUMNS: (columns: string[]) =>
+  MISSING_COLUMNS: (columns: string[]): string =>
     `❌ Faltan columnas requeridas:\n\n${columns.map((c) => `• ${c}`).join('\n')}`,
 
   ERROR: '❌ Ocurrió un error procesando el archivo.\n\nPor favor intenta nuevamente.',
@@ -115,8 +115,5 @@ export const OUTPUT_FILES = {
 // Botones del teclado
 export const KEYBOARD_BUTTONS = {
   REALIZAR_CRUCE: '🚀 Realizar Cruce',
-  VER_INFO: 'ℹ️ Información',
-  VER_REPORTE: '📊 Ver Último Reporte',
-  AYUDA: '❓ Ayuda',
   VOLVER_MENU: '🏠 Volver al Menú',
 };

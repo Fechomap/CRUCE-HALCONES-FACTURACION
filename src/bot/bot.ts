@@ -7,10 +7,7 @@ import { createLogger } from '../utils/logger';
 
 // Commands
 import { startCommand } from './commands/start.command';
-import { infoCommand } from './commands/info.command';
-import { helpCommand } from './commands/help.command';
 import { cruceCommand } from './commands/cruce.command';
-import { reporteCommand } from './commands/reporte.command';
 
 // Handlers
 import { documentHandler } from './handlers/document.handler';
@@ -45,10 +42,7 @@ export class TelegramBot {
    */
   private setupCommands(): void {
     this.bot.command('start', startCommand);
-    this.bot.command('info', infoCommand);
-    this.bot.command('help', helpCommand);
     this.bot.command('cruce', cruceCommand);
-    this.bot.command('reporte', reporteCommand);
 
     logger.info('Commands registered');
   }
@@ -73,10 +67,8 @@ export class TelegramBot {
     this.bot.catch((err: unknown, ctx) => errorMiddleware(err as Error, ctx));
 
     // Manejo de errores no capturados
-    process.on('unhandledRejection', (reason, promise) => {
-      logger.error('Unhandled Rejection', new Error(String(reason)), {
-        promise: String(promise),
-      });
+    process.on('unhandledRejection', (reason) => {
+      logger.error('Unhandled Rejection', new Error(String(reason)));
     });
 
     process.on('uncaughtException', (error) => {
@@ -121,9 +113,9 @@ export class TelegramBot {
   /**
    * Detiene el bot gracefully
    */
-  private async stop(signal: string): Promise<void> {
+  private stop(signal: string): void {
     logger.info(`${signal} received, stopping bot...`);
-    await this.bot.stop(signal);
+    this.bot.stop(signal);
     logger.info('Bot stopped');
     process.exit(0);
   }

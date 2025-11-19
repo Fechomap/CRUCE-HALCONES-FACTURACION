@@ -148,11 +148,6 @@ export class ReportService {
     lines.push(`1️⃣ BASE\\_ACTUALIZADA.xlsx`);
     lines.push(`2️⃣ REPORTE\\_CRUCE.txt`);
 
-    if (report.stats.discrepanciesCount > 0 || report.stats.notFoundCount > 0) {
-      lines.push('');
-      lines.push(`${EMOJI.WARNING} Revisa el reporte detallado para más información`);
-    }
-
     return lines.join('\n');
   }
 
